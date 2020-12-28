@@ -11,13 +11,21 @@ Write here all preprocessing functions.
 
 """
 
+import re
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+
+stopword_list = stopwords.words("english")
+stemmer = WordNetLemmatizer()
+
 def removeURLs(inputStr):
     """
     :param inputStr: the input string
     :return outputStr: inputStr without urls
     """
-    outputStr = inputStr
-    return len(outputStr)
+    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', ' URL ', inputStr)
+    return tweet
     
 def removeSpecialChars(inputStr):
     """
@@ -38,8 +46,33 @@ def removeStopWords(inputStr):
     Remove all stopwords using library nltk
     (Stopwords: "a","the","and", etc.)
     """
-    outputStr = inputStr
-    return len(outputStr)
+    tokens = word_tokenize(inputStr)
+    tokens = [x for x in tokens if x not in stopword_list]
+    outputStr = ' '.join(tokens)
+    return outputStr
+
+def lemmatize(inputStr):
+    """
+    :param inputStr: the input string
+    :return outputStr: inputStr lemmatized
+
+    Replace words with their lemmatization, i.e. 'am', 'is', 'are' => 'be' 
+    """
+    tokens = word_tokenize(inputStr)
+    lemmatized = [stemmer.lemmatize(word) for word in tokens]
+    outputStr = ' '.join(lemmatized)
+    return outputStr
+
+def removeNumbers(inputStr):
+    """
+    :param inputStr: the input string
+    :return outputStr: inputStr with numbers replaced by 'number'
+
+    The text "This is 20.13 metres long" becomes "This is number metres long".
+    """
+    outputStr = re.sub(r'(?<=\d), [,\.]', '', inputStr)
+    outputStr = re.sub(" \d+", " number ", inputStr)
+    return outputStr
 
 def dealWithEmoji(inputStr):
     """
