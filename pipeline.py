@@ -20,5 +20,13 @@ if(len(args)<1):
 else:
     file = args[0]
     data = pd.read_csv(file)
-    l=pp.removeURLs("abc def")
-    print(l)
+    o=pp.removeSpecialChars("St=0ell-11a2")
+    print(o)
+    o=pp.dealWithContractions("I didn't like this movie")
+    print(o)
+    o=pp.dealWithEmoji("I loved this song!! <3")
+    print(o)
+    o=pp.dealWithEmoji(pp.fixMisspells("I looooooveood this song! <3"))
+    print(o)
+    o=pp.removeStopWords("I liked and loved me myself and I")
+    print(o)
