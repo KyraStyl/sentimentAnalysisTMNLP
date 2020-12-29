@@ -166,10 +166,10 @@ def dealWithEmoji(inputStr):
     outputStr = emoji.demojize(outputStr)
     return outputStr
 
-def dealWithRTs(inputStr):
+def dealWithRTsAndMentions(inputStr):
     """
     :param inputStr: the input string
-    :return outputStr: inputStr without re-tweets
+    :return outputStr: inputStr without re-tweets or other user mentions
     
     For each re-tweeted tweet, keep only the initial tweet.
     e.g. 
