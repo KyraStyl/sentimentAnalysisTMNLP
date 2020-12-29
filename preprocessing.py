@@ -164,6 +164,7 @@ def dealWithEmoji(inputStr):
     withoutSmileys = [SMILEY[word] if word in SMILEY else word for word in words]
     outputStr = " ".join(withoutSmileys)
     outputStr = emoji.demojize(outputStr)
+    outputStr = re.sub(r'\:','',outputStr)
     return outputStr
 
 def dealWithRTsAndMentions(inputStr):
