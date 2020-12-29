@@ -36,7 +36,7 @@ def preprocess(inputStr):
     In this function is implemented the pipeline 
     for preprocessing each tweet.
     """
-    outputStr = inputStr
+    outputStr = inputStr.lower()
     # find the appropriate pipeline to clean the data,
     # in such way that to not destroy them ;P
     
@@ -95,11 +95,12 @@ def removeSpecialChars(inputStr):
     #replace all "newline" tokens? -> \n ?
     outputStr = inputStr
     for i in bad_chars:
-        outputStr = outputStr.replace(i, '')
+        outputStr = outputStr.replace(i, ' ')
     for i in string.punctuation : 
-        outputStr = outputStr.replace(i, '')
-    outputStr = re.sub(r'\d', '', outputStr)
-    outputStr = re.sub(r'[^\w]', '',outputStr)
+        outputStr = outputStr.replace(i, ' ')
+    outputStr = re.sub(r'\d', ' ', outputStr)
+    outputStr = re.sub(r'[^\w]', ' ',outputStr)
+    outputStr = re.sub(r'\s+', ' ', outputStr, flags=re.I)
     return outputStr
 
 def removeStopWords(inputStr):
@@ -110,9 +111,10 @@ def removeStopWords(inputStr):
     Remove all stopwords using library nltk
     (Stopwords: "a","the","and", etc.)
     """
+    negative=["not","no"]
     tokens = word_tokenize(inputStr)
     tokens = [w for w in tokens if (len(w)>1)]
-    tokens = [x for x in tokens if x not in stopwordsEN]
+    tokens = [x for x in tokens if (x not in stopwordsEN or x in negative)]
     outputStr = ' '.join(tokens)
     return outputStr
 
@@ -217,7 +219,8 @@ def tfidfVec(inputStr):
 def load_dict_smileys():
     
     return {
-        ":‑)":"happy",
+        ":-)":"happy",
+        ":)":"happy",
         ":-]":"happy",
         ":-3":"happy",
         ":->":"happy",
@@ -272,7 +275,12 @@ def load_dict_smileys():
         ":Þ":"playful",
         ":þ":"playful",
         ":b":"playful",
-        "<3":"love"
+        "<3":"love",
+        "*.*":"inlove",
+        ":-*":"kiss",
+        ":*":"kiss",
+        ";*":"kiss",
+        ";-*":"kiss"
         }
 
 def load_dict_contractions():

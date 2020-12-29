@@ -35,3 +35,5 @@ else:
     print(before)
     o=pp.dealWithEmoji(before)
     print(o)
+    o=pp.removeStopWords("he was no good for me!")
+    print(o)
