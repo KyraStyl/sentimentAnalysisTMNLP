@@ -50,7 +50,12 @@ def dealWithHashtags(inputStr):
     
     Maybe remove the special character and keep only the word 
     from hashtag as a new "feature"
+    Not ready yet!!!!
     """
+    for word in inputStr.split():
+        if word.startswith('#'):
+            word = word.replace('#', '')
+
     outputStr = inputStr
     return len(outputStr)
 
