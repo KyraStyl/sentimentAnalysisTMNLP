@@ -98,7 +98,6 @@ def removeSpecialChars(inputStr):
         outputStr = outputStr.replace(i, ' ')
     for i in string.punctuation : 
         outputStr = outputStr.replace(i, ' ')
-    outputStr = re.sub(r'\d', ' ', outputStr)
     outputStr = re.sub(r'[^\w]', ' ',outputStr)
     outputStr = re.sub(r'\s+', ' ', outputStr, flags=re.I)
     return outputStr
