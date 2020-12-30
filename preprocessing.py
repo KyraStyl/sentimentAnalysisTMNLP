@@ -52,11 +52,11 @@ def dealWithHashtags(inputStr):
     from hashtag as a new "feature"
     Not ready yet!!!!
     """
-    for word in inputStr.split():
+    outputStr = inputStr
+    for word in outputStr.split():
         if word.startswith('#'):
             word = word.replace('#', '')
 
-    outputStr = inputStr
     return len(outputStr)
 
 def dealWithContractions(inputStr):
