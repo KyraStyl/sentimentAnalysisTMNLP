@@ -17,9 +17,11 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 import nltk
 from nltk.tokenize import TweetTokenizer # ??
+from sklearn.feature_extraction.text import TfidfVectorizer
 import string
 import itertools
 import emoji
+from bs4 import BeautifulSoup
 
 nltk.download
 nltk.download('stopwords')
@@ -84,7 +86,8 @@ def removeHTMLandURLs(inputStr):
     
     Hint: Use Beautiful soup library for HTML and re library for urls
     """
-    outputStr = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', ' URL ', inputStr)
+    outputStr = BeautifulSoup(inputStr, 'html.parser')
+    outputStr = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', ' URL ', outputStr)
     return outputStr
     
 def removeSpecialChars(inputStr):
@@ -96,13 +99,14 @@ def removeSpecialChars(inputStr):
     Special characters: #,@,!,-, etc.
     Also remove digits!
     """
-    #replace with ' ' or '' ??
-    #replace all "newline" tokens? -> \n ?
+    #replace with ' ' or '' ?? YES because in other steps we will split the string according to spaces and rejoin the words, that way we will have only 1 space between words
+    #replace all "newline" tokens? -> \n ? YES because two lines are separated by \n, if it gets replaced by '' then the final word of line1 and first word of line2 will become one
     outputStr = inputStr
     for i in bad_chars:
         outputStr = outputStr.replace(i, ' ')
     for i in string.punctuation : 
         outputStr = outputStr.replace(i, ' ')
+    outputStr = outputStr.replace('\n', ' ')
     outputStr = re.sub(r'[^\w]', ' ',outputStr)
     outputStr = re.sub(r'\s+', ' ', outputStr, flags=re.I)
     return outputStr
@@ -209,15 +213,29 @@ def dealWithNegation(inputStr):
     outputStr = inputStr
     return len(outputStr)
 
-def tfidfVec(inputStr):
+def tfidf_of_corpus(corpus):
+    """
+    :param corpus: list of str
+    :return tfidf: the tfidf vectorizer model
+    :return output: the tfidf matrix of the corpus
+
+    Return the tfidf model and matrix for a corpus.
+    """
+    tfidf = TfidfVectorizer()
+    tfidf.fit(corpus)
+    output = tfidf.transform(corpus).toarray()
+    return tfidf, output
+
+def tfidfVec(inputStr, tfidf):
     """
     :param inputStr: the input string
     :return outputStr: inputStr to TF_IDF scores
     
-    Use nltk library.
+    Use sklearn library.
     """
-    outputStr = inputStr
-    return len(outputStr)
+
+    outputStr = tfidf.transform([inputStr])
+    return outputStr
     
     
 def load_dict_smileys():
