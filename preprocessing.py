@@ -39,7 +39,7 @@ def preprocess(inputStr):
     for preprocessing each tweet.
     """
     outputStr = inputStr.lower()    
-    #outputStr = removeHTMLandURLs(outputStr) #not ok
+    outputStr = removeHTMLandURLs(outputStr) #ok
     outputStr = fixMisspells(outputStr)
     outputStr = dealWithContractions(outputStr) #ok
     outputStr = dealWithHashtags(outputStr) #ok
