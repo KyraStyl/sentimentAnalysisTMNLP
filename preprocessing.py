@@ -29,8 +29,8 @@ nltk.download('stopwords')
 
 stopwordsEN = stopwords.words("english")
 stemmer = WordNetLemmatizer()
-bad_chars = ['#','@',',','=','.','«','»','…',' ', "-","_", ":", ";", "(", ")", "{", "}","[","]","&","'", "!", "?","~", "\""]
-             
+bad_chars = ['#','@',',','=','.','«','»','…',' ', "-","_", ":", ";", "(", ")","'","{", "}","[","]","&", "!", "?","~", "\""]
+negative_words=["not","no","neither","none","nothing","never","nowhere","nobody"]
              
 def preprocess(inputStr):
     """
@@ -38,11 +38,18 @@ def preprocess(inputStr):
     In this function is implemented the pipeline 
     for preprocessing each tweet.
     """
-    outputStr = inputStr.lower()
-    # find the appropriate pipeline to clean the data,
-    # in such way that to not destroy them ;P
-    
-    # LAST STEP !
+    outputStr = inputStr.lower()    
+    #outputStr = removeHTMLandURLs(outputStr) #not ok
+    outputStr = fixMisspells(outputStr)
+    outputStr = dealWithContractions(outputStr) #ok
+    outputStr = dealWithHashtags(outputStr) #ok
+    outputStr = dealWithEmoji(outputStr) #ok
+    #outputStr = dealWithRTsAndMentions(outputStr) #not ok
+    outputStr = removeSpecialChars(outputStr) #ok
+    outputStr = removeNumbers(outputStr) #ok
+    outputStr = lemmatize(outputStr)
+    outputStr = removeStopWords(outputStr) #ok
+    outputStr = dealWithNegation(outputStr) #ok
     return outputStr
 
 def dealWithHashtags(inputStr):
@@ -52,14 +59,15 @@ def dealWithHashtags(inputStr):
     
     Maybe remove the special character and keep only the word 
     from hashtag as a new "feature"
-    Not ready yet!!!!
     """
-    outputStr = inputStr
-    for word in outputStr.split():
+    outputStr = []
+    for word in inputStr.split():
         if word.startswith('#'):
-            word = word.replace('#', '')
-
-    return len(outputStr)
+            outputStr.append(word.replace('#', ''))
+        else:
+            outputStr.append(word)
+    outputStr = ' '.join(outputStr)
+    return outputStr
 
 def dealWithContractions(inputStr):
     """
@@ -71,14 +79,13 @@ def dealWithContractions(inputStr):
     e.g. didn't -> did not
     """
     outputStr = inputStr.replace("’","'")
-    words = outputStr.split()
+    tokens = outputStr.split()
     CONTRACTIONS = load_dict_contractions()
-    withoutContractions = [CONTRACTIONS[word] if word in CONTRACTIONS else word for word in words]
-    outputStr = " ".join(withoutContractions)
+    withoutContractions = [CONTRACTIONS[token] if token in CONTRACTIONS else token for token in tokens]
+    outputStr = ' '.join(withoutContractions)
     return outputStr
              
-
-# additions need to be done
+# BEAUTIFUL SOUP DOESN'T WORK PROPERLY !!!!
 def removeHTMLandURLs(inputStr):
     """
     :param inputStr: the input string
@@ -97,10 +104,7 @@ def removeSpecialChars(inputStr):
     
     Remove special characters from input string.
     Special characters: #,@,!,-, etc.
-    Also remove digits!
     """
-    #replace with ' ' or '' ?? YES because in other steps we will split the string according to spaces and rejoin the words, that way we will have only 1 space between words
-    #replace all "newline" tokens? -> \n ? YES because two lines are separated by \n, if it gets replaced by '' then the final word of line1 and first word of line2 will become one
     outputStr = inputStr
     for i in bad_chars:
         outputStr = outputStr.replace(i, ' ')
@@ -118,11 +122,12 @@ def removeStopWords(inputStr):
     
     Remove all stopwords using library nltk
     (Stopwords: "a","the","and", etc.)
+    
+    Exclude from stopwords all negative words like "no","not", etc.
     """
-    negative=["not","no"]
-    tokens = word_tokenize(inputStr)
+    tokens =  word_tokenize(inputStr)
     tokens = [w for w in tokens if (len(w)>1)]
-    tokens = [x for x in tokens if (x not in stopwordsEN or x in negative)]
+    tokens = [x for x in tokens if (x not in stopwordsEN or x in negative_words)]
     outputStr = ' '.join(tokens)
     return outputStr
 
@@ -132,11 +137,11 @@ def fixMisspells(inputStr):
     :return outputStr: inputStr without misspells
     
     Naive technique to fix misspelled words. 
-    Each character should occur not more than 1 times consecutive in every word.
+    Each character should occur not more than 2 times consecutive in every word.
     
-    e.g. goaaaaaal -> goal
-    """
-    outputStr = ''.join(''.join(s)[:1] for _, s in itertools.groupby(inputStr))
+    e.g. goaaaaaal -> gooal
+    """            
+    outputStr = ''.join(''.join(s)[:2] for _, s in itertools.groupby(inputStr))
     return outputStr
 
 def lemmatize(inputStr):
@@ -151,6 +156,7 @@ def lemmatize(inputStr):
     outputStr = ' '.join(lemmatized)
     return outputStr
 
+# why not totally remove them?
 def removeNumbers(inputStr):
     """
     :param inputStr: the input string
@@ -172,11 +178,12 @@ def dealWithEmoji(inputStr):
     SMILEY = load_dict_smileys()
     words = inputStr.split()
     withoutSmileys = [SMILEY[word] if word in SMILEY else word for word in words]
-    outputStr = " ".join(withoutSmileys)
+    outputStr = ' '.join(withoutSmileys)
     outputStr = emoji.demojize(outputStr)
     outputStr = re.sub(r'\:','',outputStr)
     return outputStr
 
+# additions need be done
 def dealWithRTsAndMentions(inputStr):
     """
     :param inputStr: the input string
@@ -210,8 +217,21 @@ def dealWithNegation(inputStr):
     BECOMES-> "I get corona, I get corona. At the end of the day, 
     I'm  not_gonna not_let not_it not_stop not_me not_from not_partying."
     """
-    outputStr = inputStr
-    return len(outputStr)
+    tokens = word_tokenize(inputStr)
+    outputStr = []
+    negfound = False
+    for x in tokens:
+        if x in negative_words:
+            if negfound==False:
+                negfound = True
+            else:
+                negfound = False
+        else:
+            if negfound:
+                outputStr.append(str("_NEG_"+x))
+            else:
+                outputStr.append(x)
+    return outputStr
 
 def tfidf_of_corpus(corpus):
     """
@@ -311,7 +331,7 @@ def load_dict_contractions():
         "ain't":"is not",
         "amn't":"am not",
         "aren't":"are not",
-        "can't":"cannot",
+        "can't":"can not",
         "'cause":"because",
         "couldn't":"could not",
         "couldn't've":"could not have",

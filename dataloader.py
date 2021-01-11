@@ -7,7 +7,15 @@ class DataLoader():
     def __init__(self, filename):
         self.df = pandas.read_csv(filename)
         self.tweets = self.df['text'].tolist()
-        self.scores = self.df['sentiment_score'].tolist()    
+        self.scores = self.df['sentiment_score'].tolist()  
+    
+    def load_dataset(self, return_X_y=True):
+        if return_X_y==False:
+            return self.df
+        return self.tweets, self.scores
+    
+    def set_X(self, dataX):
+        self.tweets = dataX
 
     def train_test_split(self, ratio):
         zipped = list(zip(self.tweets, self.scores))
