@@ -44,7 +44,7 @@ def preprocess(inputStr):
     outputStr = dealWithContractions(outputStr) #ok
     outputStr = dealWithHashtags(outputStr) #ok
     outputStr = dealWithEmoji(outputStr) #ok
-    #outputStr = dealWithRTsAndMentions(outputStr) #not ok
+    outputStr = dealWithRTsAndMentions(outputStr) #ok
     outputStr = removeSpecialChars(outputStr) #ok
     outputStr = removeNumbers(outputStr) #ok
     outputStr = lemmatize(outputStr)
@@ -200,8 +200,10 @@ def dealWithRTsAndMentions(inputStr):
     
     keep only -> "This is Generation Z ...etc."
     """
-    outputStr = inputStr
-    return len(outputStr)
+    #outputStr = inputStr
+    outputStr = re.sub("@[A-Za-z0-9\-\_\.]+", "", inputStr)
+    outputStr = re.sub("rt[ ]+[\:]*", "", outputStr)
+    return outputStr
 
 def dealWithNegation(inputStr):
     """
