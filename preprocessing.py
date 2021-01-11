@@ -86,6 +86,7 @@ def dealWithContractions(inputStr):
     return outputStr
              
 # BEAUTIFUL SOUP DOESN'T WORK PROPERLY !!!!
+# TEST IT NOW, I FIXED IT!
 def removeHTMLandURLs(inputStr):
     """
     :param inputStr: the input string
@@ -93,8 +94,9 @@ def removeHTMLandURLs(inputStr):
     
     Hint: Use Beautiful soup library for HTML and re library for urls
     """
-    outputStr = BeautifulSoup(inputStr, 'html.parser')
-    outputStr = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', ' URL ', outputStr)
+    outputStr = BeautifulSoup(inputStr, 'html.parser').get_text()
+    exp=r'''(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))'''
+    outputStr = re.sub(exp, ' URL ', outputStr)
     return outputStr
     
 def removeSpecialChars(inputStr):
