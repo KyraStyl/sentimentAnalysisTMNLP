@@ -16,6 +16,7 @@ class DataLoader():
     
     def set_X(self, dataX):
         self.tweets = dataX
+        self.df['text']=dataX # ??
 
     def train_test_split(self, ratio):
         zipped = list(zip(self.tweets, self.scores))
