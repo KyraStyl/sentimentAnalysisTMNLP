@@ -39,17 +39,17 @@ def preprocess(inputStr):
     for preprocessing each tweet.
     """
     outputStr = inputStr.lower()    
-    outputStr = removeHTMLandURLs(outputStr) #ok
-    outputStr = fixMisspells(outputStr)
-    outputStr = dealWithContractions(outputStr) #ok
-    outputStr = dealWithHashtags(outputStr) #ok
-    outputStr = dealWithEmoji(outputStr) #ok
-    outputStr = dealWithRTsAndMentions(outputStr) #ok
-    outputStr = removeSpecialChars(outputStr) #ok
-    outputStr = removeNumbers(outputStr) #ok
-    outputStr = lemmatize(outputStr)
-    outputStr = removeStopWords(outputStr) #ok
-    outputStr = dealWithNegation(outputStr) #ok
+    outputStr = removeHTMLandURLs(outputStr) 
+    outputStr = fixMisspells(outputStr) 
+    outputStr = dealWithContractions(outputStr) 
+    outputStr = dealWithHashtags(outputStr) 
+    outputStr = dealWithEmoji(outputStr) 
+    outputStr = dealWithRTsAndMentions(outputStr) 
+    outputStr = removeSpecialChars(outputStr) 
+    outputStr = removeNumbers(outputStr) 
+    outputStr = lemmatize(outputStr) 
+    outputStr = removeStopWords(outputStr) 
+    outputStr = dealWithNegation(outputStr) 
     return outputStr
 
 def dealWithHashtags(inputStr):
@@ -85,8 +85,7 @@ def dealWithContractions(inputStr):
     outputStr = ' '.join(withoutContractions)
     return outputStr
              
-# BEAUTIFUL SOUP DOESN'T WORK PROPERLY !!!!
-# TEST IT NOW, I FIXED IT!
+
 def removeHTMLandURLs(inputStr):
     """
     :param inputStr: the input string
