@@ -12,26 +12,30 @@ Write here all preprocessing functions.
 """
 
 import re
-from nltk.corpus import stopwords
+import nltk
+from nltk.corpus import stopwords,words
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-import nltk
-from nltk.tokenize import TweetTokenizer # ??
 from sklearn.feature_extraction.text import TfidfVectorizer
 import string
 import itertools
 import emoji
 from bs4 import BeautifulSoup
+import warnings
 
+# =============================================================================
+warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
 nltk.download
 nltk.download('stopwords')
 
-
+# =============================================================================
 stopwordsEN = stopwords.words("english")
+wordsEN = words.words()
 stemmer = WordNetLemmatizer()
 bad_chars = ['#','@',',','=','.','«','»','…',' ', "-","_", ":", ";", "(", ")","'","{", "}","[","]","&", "!", "?","~", "\""]
 negative_words=["not","no","neither","none","nothing","never","nowhere","nobody"]
-             
+
+# =============================================================================             
 def preprocess(inputStr):
     """
     Basic function for preprocessing.
@@ -52,6 +56,7 @@ def preprocess(inputStr):
     outputStr = dealWithNegation(outputStr) 
     return outputStr
 
+# =============================================================================
 def dealWithHashtags(inputStr):
     """
     :param inputStr: the input string
@@ -69,6 +74,7 @@ def dealWithHashtags(inputStr):
     outputStr = ' '.join(outputStr)
     return outputStr
 
+# =============================================================================
 def dealWithContractions(inputStr):
     """
     :param inputStr: the input string
@@ -85,7 +91,7 @@ def dealWithContractions(inputStr):
     outputStr = ' '.join(withoutContractions)
     return outputStr
              
-
+# =============================================================================
 def removeHTMLandURLs(inputStr):
     """
     :param inputStr: the input string
@@ -98,6 +104,7 @@ def removeHTMLandURLs(inputStr):
     outputStr = re.sub(exp, ' URL ', outputStr)
     return outputStr
     
+# =============================================================================
 def removeSpecialChars(inputStr):
     """
     :param inputStr: the input string
@@ -116,6 +123,7 @@ def removeSpecialChars(inputStr):
     outputStr = re.sub(r'\s+', ' ', outputStr, flags=re.I)
     return outputStr
 
+# =============================================================================
 def removeStopWords(inputStr):
     """
     :param inputStr: the input string
@@ -128,10 +136,11 @@ def removeStopWords(inputStr):
     """
     tokens =  word_tokenize(inputStr)
     tokens = [w for w in tokens if (len(w)>1)]
-    tokens = [x for x in tokens if (x not in stopwordsEN or x in negative_words)]
+    tokens = [x for x in tokens if ((x not in stopwordsEN or x in negative_words) and (x in wordsEN or not x.isalpha()))]
     outputStr = ' '.join(tokens)
     return outputStr
 
+# =============================================================================
 def fixMisspells(inputStr):
     """
     :param inputStr: the input string
@@ -145,6 +154,7 @@ def fixMisspells(inputStr):
     outputStr = ''.join(''.join(s)[:2] for _, s in itertools.groupby(inputStr))
     return outputStr
 
+# =============================================================================
 def lemmatize(inputStr):
     """
     :param inputStr: the input string
@@ -157,6 +167,7 @@ def lemmatize(inputStr):
     outputStr = ' '.join(lemmatized)
     return outputStr
 
+# =============================================================================
 # why not totally remove them?
 def removeNumbers(inputStr):
     """
@@ -169,6 +180,7 @@ def removeNumbers(inputStr):
     outputStr = re.sub(" \d+", " number ", inputStr)
     return outputStr
 
+# =============================================================================
 def dealWithEmoji(inputStr):
     """
     :param inputStr: the input string
@@ -184,7 +196,7 @@ def dealWithEmoji(inputStr):
     outputStr = re.sub(r'\:','',outputStr)
     return outputStr
 
-# additions need be done
+# =============================================================================
 def dealWithRTsAndMentions(inputStr):
     """
     :param inputStr: the input string
@@ -200,10 +212,11 @@ def dealWithRTsAndMentions(inputStr):
     keep only -> "This is Generation Z ...etc."
     """
     #outputStr = inputStr
-    outputStr = re.sub("@[A-Za-z0-9\-\_\.]+", "", inputStr)
+    outputStr = re.sub("@[A-Za-z0-9\-\_\.\:]+", "", inputStr)
     outputStr = re.sub("rt[ ]+[\:]*", "", outputStr)
     return outputStr
 
+# =============================================================================
 def dealWithNegation(inputStr):
     """
     :param inputStr: the input string
@@ -236,6 +249,7 @@ def dealWithNegation(inputStr):
                 outputStr.append(x)
     return outputStr
 
+# =============================================================================
 def tfidf_of_corpus(corpus):
     """
     :param corpus: list of str
@@ -249,6 +263,7 @@ def tfidf_of_corpus(corpus):
     output = tfidf.transform(corpus).toarray()
     return tfidf, output
 
+# =============================================================================
 def tfidfVec(inputStr, tfidf):
     """
     :param inputStr: the input string
@@ -260,7 +275,8 @@ def tfidfVec(inputStr, tfidf):
     outputStr = tfidf.transform([inputStr])
     return outputStr
     
-    
+ 
+# =============================================================================
 def load_dict_smileys():
     
     return {
@@ -444,6 +460,7 @@ def load_dict_contractions():
         "who'll":"who will",
         "who're":"who are",
         "who's":"who is",
+        "whot":"what",
         "who've":"who have",
         "why'd":"why did",
         "why're":"why are",
