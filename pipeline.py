@@ -11,6 +11,9 @@ import sys
 import preprocessing as pp
 import dataloader as dl
 import fasttextpp as ftp
+from sklearn.linear_model import LogisticRegression
+from sklearn import svm
+from sklearn.naive_bayes import MultinomialNB
 
 args = sys.argv
 
@@ -43,11 +46,23 @@ else:
     
     print("create model")
     ft = ftp.FastTextModel()
+    lr = LogisticRegression()
+    svm = svm.SVC(kernel='sigmoid', gamma=5, C=100)
+    nb = MultinomialNB(alpha=.01)
     
     print("fit model")
-    ft.fit(X_train,y_train)
+    ft.fit(X_train, y_train)
+    lr.fit(X_train, y_train)
+    svm.fit(X_train, y_train)
+    nb.fit(X_train, y_train)
     
     print("score model")
-    sc = ft.score(X_test,y_test)
-    print("Accuracy: ",sc)
+    sc = ft.score(X_test, y_test)
+    print("Accuracy: ", sc)
+    sc = lr.score(X_test, y_test)
+    print("Logistic Regression Accuracy: ", sc)
+    svm = svm.score(X_test, y_test)
+    print("SVM Accuracy: ", sc)
+    sc = nb.score(X_test, y_test)
+    print("Logistic Regression Accuracy: ", sc)
     
