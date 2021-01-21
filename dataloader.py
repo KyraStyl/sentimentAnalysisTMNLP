@@ -6,8 +6,10 @@ from nltk.tokenize import word_tokenize
 class DataLoader():
     def __init__(self, filename):
         self.df = pandas.read_csv(filename)
-        self.tweets = self.df['text'].astype(str).tolist()
-        self.scores = self.df['sentiment_score'].tolist()  
+        self.tweets = self.df['text'].astype(str).tolist()[:5000]
+        self.scores = self.df['sentiment_score'].tolist()[:5000]
+        print(len(self.tweets))
+        print(len(self.scores))
     
     def load_dataset(self, return_X_y=True):
         if return_X_y==False:
@@ -16,7 +18,7 @@ class DataLoader():
     
     def set_X(self, dataX):
         self.tweets = dataX
-        self.df['text']=dataX 
+        #self.df['text']=dataX 
 
     def train_test_split(self, ratio):
         zipped = list(zip(self.tweets, self.scores))

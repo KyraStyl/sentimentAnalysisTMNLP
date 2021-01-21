@@ -12,7 +12,7 @@ import re
 import pandas as pd
 
 class FastTextModel():
-    def __init__(self,lr=0.01,epoch=20,wordNgrams=2,dim=20):
+    def __init__(self,lr=0.1,epoch=50,wordNgrams=3,dim=20):
         self.lr = lr
         self.epoch = epoch
         self.wordNgrams = wordNgrams
@@ -21,9 +21,9 @@ class FastTextModel():
 
     def mapToLabel(self,score):
         label="NULL"
-        if score>=-1 and score<-0.3:
+        if score>=-1 and score<-0.2:
             label="NEGATIVE"
-        elif (score<=0.3):
+        elif (score<=0.2):
             label="NEUTRAL"
         elif score<=1:
             label="POSITIVE"
@@ -64,7 +64,9 @@ class FastTextModel():
     def predict(self,X_test):
         predictions = []
         for row in X_test:
-            pred = re.sub("\,[A-Za-z]+","",self.model.predict(row, k=1)[0][0])
+            p = self.model.predict(row, k=1)
+            print(p)
+            pred = re.sub("\,[A-Za-z]+","",p[0][0])
             predictions.append(pred)
         return predictions
     

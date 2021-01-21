@@ -135,7 +135,6 @@ def removeStopWords(inputStr):
     Exclude from stopwords all negative words like "no","not", etc.
     """
     tokens =  word_tokenize(inputStr)
-    tokens = [w for w in tokens if (len(w)>1)]
     tokens = [x for x in tokens if ((x not in stopwordsEN or x in negative_words) and (x in wordsEN or not x.isalpha()))]
     outputStr = ' '.join(tokens)
     return outputStr
@@ -164,6 +163,7 @@ def lemmatize(inputStr):
     """
     tokens = word_tokenize(inputStr)
     lemmatized = [stemmer.lemmatize(word) for word in tokens]
+    lemmatized = [w for w in lemmatized if (len(w)>2)]
     outputStr = ' '.join(lemmatized)
     return outputStr
 
@@ -177,7 +177,7 @@ def removeNumbers(inputStr):
     The text "This is 20.13 metres long" becomes "This is number metres long".
     """
     outputStr = re.sub(r'(?<=\d), [,\.]', '', inputStr)
-    outputStr = re.sub(" \d+", " number ", inputStr)
+    outputStr = re.sub(" \d+", "", inputStr)
     return outputStr
 
 # =============================================================================
