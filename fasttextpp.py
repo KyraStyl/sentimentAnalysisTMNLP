@@ -13,6 +13,7 @@ import pandas as pd
 
 class FastTextModel():
     def __init__(self,lr=0.1,epoch=50,wordNgrams=3,dim=20):
+        print(lr)
         self.lr = lr
         self.epoch = epoch
         self.wordNgrams = wordNgrams

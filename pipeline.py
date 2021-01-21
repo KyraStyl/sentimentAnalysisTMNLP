@@ -27,49 +27,61 @@ else:
     #file = args[0]
     file = "95_clean.csv"
     
-    # load it
+    print("create model")
+    
+    notfasttext = True
+    load_model = "FASTTEXT"
+    parameters = {"lr":0.2,"epoch":100,"wordNgrams":3,"dim":20} #fasttext parameters
+    #parameters = {"penalty":'l2',"C":1.0,"solver":'lbfgs'} #lr parameters
+    #parameters = {"kernel":'sigmoid', "gamma":5, "C":100} #svm parameters
+    #parameters = {"alpha":0.1}
+    load_model = load_model.lower()
+    if load_model == "logisticregression":
+        model = LogisticRegression(**parameters)
+    elif load_model == "svm":
+        model = svm.SVC(**parameters)
+    elif load_model == "naivebayes":
+        model = MultinomialNB(**parameters)
+    elif load_model == "fasttext":
+        notfasttext = False
+        model = ftp.FastTextModel(**parameters)
+    else:
+        print("wrong model")
+    
+    
+    # load dataset
     dataloader = dl.DataLoader(file)
-    X,y = dataloader.load_dataset()
+    print("load dataset")
+    X,y = dataloader.load_dataset(return_X_y=True)
     
     #preprocess tweets
     X = [' '.join(pp.preprocess(tweet)) for tweet in X]
+   
+    #if not fasttext convert score to labels
+    if notfasttext:
+        y = [ftp.FastTextModel().mapToLabel(score) for score in y]
     
-    #re-set the tweets in dataloader
-    dataloader.set_X(X)
+    #re-set the tweets and scores in dataloader (after changes)
+    dataloader.set_X(X,y)
     
     # split to train and test
     print("split to train and test")
-    X_train, X_test, y_train, y_test = dataloader.train_test_split(0.7)
+    X_train, X_test, y_train, y_test = dataloader.train_test_split(X,y,0.7)
     
-    print("load dataset")
-    dataset = dataloader.load_dataset(return_X_y=False)
-    
-    print("create model")
-    ft = ftp.FastTextModel()
-    lr = LogisticRegression()
-    svm = svm.SVC(kernel='sigmoid', gamma=5, C=100)
-    nb = MultinomialNB(alpha=.01)
-    
-    start = time.time()
+    # if not fasttext get tfidf
+    if notfasttext:
+        tfidf, X_train = pp.tfidf_of_corpus(X_train)
+        X_test = [pp.tfidfVec(x,tfidf).toarray().tolist()[0] for x in X_test]
 
+
+    startTime = time.time()
     print("fit model")
-    ft.fit(X_train, y_train)
-    lr.fit(X_train, y_train)
-    svm.fit(X_train, y_train)
-    nb.fit(X_train, y_train)
+    model.fit(X_train,y_train)
     
     print("score model")
-    sc = ft.score(X_test, y_test)
-    print("Accuracy: ", sc)
-    sc = lr.score(X_test, y_test)
-    print("Logistic Regression Accuracy: ", sc)
-    svm = svm.score(X_test, y_test)
-    print("SVM Accuracy: ", sc)
-    sc = nb.score(X_test, y_test)
-    print("Logistic Regression Accuracy: ", sc)
+    sc = model.score(X_test, y_test)
     
-
-    sc = ft.score(X_test,y_test)
-    print("Accuracy: ",sc)
-    stop = time.time()
-    print(stop - start)
+    print("Accuracy of ",load_model," is:", sc)
+    
+    stopTime = time.time()
+    print("Execution Took : ",stopTime - startTime," seconds.")

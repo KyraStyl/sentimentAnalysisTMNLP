@@ -6,8 +6,8 @@ from nltk.tokenize import word_tokenize
 class DataLoader():
     def __init__(self, filename):
         self.df = pandas.read_csv(filename)
-        self.tweets = self.df['text'].astype(str).tolist()[:5000]
-        self.scores = self.df['sentiment_score'].tolist()[:5000]
+        self.tweets = self.df['text'].astype(str).tolist()[:500]
+        self.scores = self.df['sentiment_score'].tolist()[:500]
         print(len(self.tweets))
         print(len(self.scores))
     
@@ -16,12 +16,17 @@ class DataLoader():
             return self.df
         return self.tweets, self.scores
     
-    def set_X(self, dataX):
+    def set_X(self, dataX, dataY):
         self.tweets = dataX
+        self.scores = dataY
         #self.df['text']=dataX 
 
-    def train_test_split(self, ratio):
-        zipped = list(zip(self.tweets, self.scores))
+    def train_test_split(self, X, y, ratio):
+        if X is None:
+            X=self.tweets
+        if y is None:
+            y=self.scores
+        zipped = list(zip(X, y))
         random.shuffle(zipped)
         tweets, scores = zip(*zipped)
 
