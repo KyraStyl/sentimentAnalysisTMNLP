@@ -5,7 +5,7 @@ Created on Sun Dec 27 14:30:30 2020
 
 @author: kyrastyl
 """
-
+import time
 import sys
 #import pandas as pd
 import preprocessing as pp
@@ -22,7 +22,7 @@ if(len(args)<1):
     sys.exit()
 else:
     #file = args[0]
-    file = "84_clean.csv"
+    file = "95_clean.csv"
     
     # load it
     dataloader = dl.DataLoader(file)
@@ -43,11 +43,12 @@ else:
     
     print("create model")
     ft = ftp.FastTextModel()
-    
+    start = time.time()
     print("fit model")
     ft.fit(X_train,y_train)
     
     print("score model")
     sc = ft.score(X_test,y_test)
     print("Accuracy: ",sc)
-    
+    stop = time.time()
+    print(stop - start)
