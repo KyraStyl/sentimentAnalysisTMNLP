@@ -14,7 +14,7 @@ import fasttextpp as ftp
 from sklearn.linear_model import LogisticRegression
 from sklearn import svm
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, balanced_accuracy_score, confusion_matrix
 
 args = sys.argv
 
@@ -30,15 +30,15 @@ else:
     
     print("Instantiating model...")
     
-    load_model = "logisticregression"
-    representation = "word2vec"
+    load_model = "fasttext"
+    representation = "tfidf"
     parameters = {}
     if load_model=="fasttext":
-        parameters = {"lr":0.2,"epoch":100,"wordNgrams":3,"dim":20} #fasttext parameters
+        parameters = {"lr":0.2,"epoch":500,"wordNgrams":3,"dim":20} #fasttext parameters
     elif load_model=="logisticregression":
-        parameters = {"penalty":'l2',"C":1.0,"solver":'lbfgs'} #lr parameters
+        parameters = {"penalty":'l2',"C":0.1,"solver":'lbfgs'} #lr parameters
     elif load_model=="svm":
-        parameters = {"kernel":'sigmoid', "gamma":5, "C":100} #svm parameters
+        parameters = {"kernel":'rbf', "gamma":'auto', "C":0.1} #svm parameters
     #parameters = {"alpha":0.1}
  
     model = None
@@ -55,7 +55,7 @@ else:
     
     
     # load dataset
-    dataloader = dl.DataLoader(file, 10000)
+    dataloader = dl.DataLoader(file, 1000)
     X,y = dataloader.load_dataset(return_X_y=True)
     print("Dataset loaded")
     
@@ -77,7 +77,7 @@ else:
     if load_model!='fasttext':
         if representation=='tfidf':
             # Set pca_level to None if you do not want a PCA transformation
-            tfidf, pca, X_train = pp.tfidf_of_corpus(X_train, pca_level=0.99)
+            tfidf, pca, X_train = pp.tfidf_of_corpus(X_train, pca_level=None)
             X_test = [pp.tfidfVec(x, tfidf, pca).tolist()[0] for x in X_test]
         elif representation=='word2vec':
             w2v = W2V()
@@ -91,14 +91,19 @@ else:
     
     def score(model, X_test, y_test):
         y_pred = model.predict(X_test)
+
         if load_model=='fasttext':
             y_test = [model.transform_instance(score) for score in y_test]
-        results = {'accuracy': accuracy_score(y_test, y_pred), 'precision': precision_score(y_test, y_pred, average='micro'), 
-        'recall': recall_score(y_test, y_pred, average='micro'), 'f1': f1_score(y_test, y_pred, average='micro')}
+            y_pred = [model.clear_output(score) for score in y_pred]
+
+        #print(confusion_matrix(y_test, y_pred))
+        results = {'accuracy': balanced_accuracy_score(y_test, y_pred), 'precision': precision_score(y_test, y_pred, average='macro'), 
+        'recall': recall_score(y_test, y_pred, average='macro'), 'f1': f1_score(y_test, y_pred, average='macro')}
         return results
 
     print("Scoring the model...")
-    sc = score(model, X_test, y_test)
+    sc = score(model, X_train, y_train)
+    
     
     print("Metrics of ",load_model," are:", sc)
     
