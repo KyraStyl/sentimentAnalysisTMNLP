@@ -2,14 +2,17 @@ import pandas
 import random
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
+from random import sample, seed
 
 class DataLoader():
-    def __init__(self, filename):
-        self.df = pandas.read_csv(filename)
-        self.tweets = self.df['text'].astype(str).tolist()[:500]
-        self.scores = self.df['sentiment_score'].tolist()[:500]
-        print(len(self.tweets))
-        print(len(self.scores))
+    def __init__(self, filename, size):
+        self.df = pandas.read_csv(filename, low_memory=False, lineterminator='\n')
+        seed(0)
+        self.tweets = sample(self.df['text'].astype(str).tolist(), size)
+        self.scores = sample(self.df['sentiment_score'].tolist(), size)
+        #print(len(self.tweets))
+        #print(len(self.scores))
+        print("Dataset size:", len(self.tweets))
     
     def load_dataset(self, return_X_y=True):
         if return_X_y==False:

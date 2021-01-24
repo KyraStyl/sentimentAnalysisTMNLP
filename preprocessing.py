@@ -22,11 +22,11 @@ import itertools
 import emoji
 from bs4 import BeautifulSoup
 import warnings
+from sklearn.decomposition import PCA
 
 # =============================================================================
 warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
-nltk.download
-nltk.download('stopwords')
+nltk.download('stopwords', quiet=True)
 
 # =============================================================================
 stopwordsEN = stopwords.words("english")
@@ -250,7 +250,7 @@ def dealWithNegation(inputStr):
     return outputStr
 
 # =============================================================================
-def tfidf_of_corpus(corpus):
+def tfidf_of_corpus(corpus, pca_level=None):
     """
     :param corpus: list of str
     :return tfidf: the tfidf vectorizer model
@@ -261,18 +261,26 @@ def tfidf_of_corpus(corpus):
     tfidf = TfidfVectorizer()
     tfidf.fit(corpus)
     output = tfidf.transform(corpus).toarray()
-    return tfidf, output
+
+    pca = None
+    if pca_level != None:
+        pca = PCA(pca_level)
+        output = pca.fit_transform(output)
+
+    return tfidf, pca, output
 
 # =============================================================================
-def tfidfVec(inputStr, tfidf):
+def tfidfVec(inputStr, tfidf, pca):
     """
     :param inputStr: the input string
     :return outputStr: inputStr to TF_IDF scores
     
     Use sklearn library.
     """
-
-    outputStr = tfidf.transform([inputStr])
+    
+    outputStr = tfidf.transform([inputStr]).toarray()
+    if pca != None:
+        outputStr = pca.transform(outputStr)
     return outputStr
     
  

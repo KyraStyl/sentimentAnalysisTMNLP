@@ -11,14 +11,14 @@ class W2V():
         try:
             return self.wv[word]
         except:
-            return 0
+            return [0.0]*300
 
     def make_embedding(self, sentence):
         sentence_list = word_tokenize(sentence)
-        w2v_sentence = np.array([self.get_w2v(word) for word in sentence_list])
-        return w2v_sentence
-        
-w = W2V()
-print(w.make_embedding("hello world"))
+        if len(sentence_list)==0:
+            return np.array([0]*300)
+        w2v_sentence = [self.get_w2v(word) for word in sentence_list]
+        w2v_sentence = np.array(w2v_sentence)
+        return np.mean(w2v_sentence, axis=0)
 
-
+#print(W2V().make_embedding('future grandson hey grandpa want corona'))

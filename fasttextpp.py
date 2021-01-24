@@ -12,13 +12,13 @@ import re
 import pandas as pd
 
 class FastTextModel():
-    def __init__(self,lr=0.1,epoch=50,wordNgrams=3,dim=20):
-        print(lr)
+    def __init__(self, lr=0.1, epoch=50, wordNgrams=3, dim=20, quiet=False):
         self.lr = lr
         self.epoch = epoch
         self.wordNgrams = wordNgrams
         self.dim = dim
-        print("Created Instance Fasttext")
+        if not quiet:
+            print("Created Instance Fasttext")
 
     def mapToLabel(self,score):
         label="NULL"
@@ -69,18 +69,6 @@ class FastTextModel():
             print(p)
             pred = re.sub("\,[A-Za-z]+","",p[0][0])
             predictions.append(pred)
-        return predictions
-    
-    
-    def score(self,X_test,y_test):
-        acc = 0
-        predictions = self.predict(X_test)
-        y_test = [self.transform_instance(score) for score in y_test]
-        for i,p in enumerate(predictions):
-            if p == y_test[i]:
-                acc +=1
-        acc = acc/len(y_test)
-        return acc
-    
+        return predictions 
     
     
