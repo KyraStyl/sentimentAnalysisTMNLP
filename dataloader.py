@@ -3,15 +3,15 @@ import random
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from random import sample, seed
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 class DataLoader():
     def __init__(self, filename, size):
         self.df = pandas.read_csv(filename, low_memory=False, lineterminator='\n')
         seed(0)
+        sid = SentimentIntensityAnalyzer()
         self.tweets = sample(self.df['text'].astype(str).tolist(), size)
-        self.scores = sample(self.df['sentiment_score'].tolist(), size)
-        #print(len(self.tweets))
-        #print(len(self.scores))
+        self.scores = [self.convert_polarity_score(sid.polarity_scores(x)) for x in self.tweets]
         print("Dataset size:", len(self.tweets))
     
     def load_dataset(self, return_X_y=True):
@@ -36,6 +36,9 @@ class DataLoader():
         split_pos = int(len(tweets)*ratio)
 
         return tweets[:split_pos], tweets[split_pos:], scores[:split_pos], scores[split_pos:]
+
+    def convert_polarity_score(self, scores):
+        return scores['compound']
 
 class ClassificationDataloader():
     def __init__(self, filename):

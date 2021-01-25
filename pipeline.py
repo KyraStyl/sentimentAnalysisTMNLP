@@ -16,6 +16,8 @@ from sklearn import svm
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, balanced_accuracy_score, confusion_matrix
 
+
+
 args = sys.argv
 
 print(len(args))
@@ -34,11 +36,11 @@ else:
     representation = "tfidf"
     parameters = {}
     if load_model=="fasttext":
-        parameters = {"lr":0.2,"epoch":500,"wordNgrams":3,"dim":20} #fasttext parameters
+        parameters = {"lr":0.2,"epoch":200,"wordNgrams":3,"dim":20} #fasttext parameters
     elif load_model=="logisticregression":
         parameters = {"penalty":'l2',"C":0.1,"solver":'lbfgs'} #lr parameters
     elif load_model=="svm":
-        parameters = {"kernel":'rbf', "gamma":'auto', "C":0.1} #svm parameters
+        parameters = {"kernel":'rbf', "gamma":'scale', "C":100} #svm parameters
     #parameters = {"alpha":0.1}
  
     model = None
@@ -58,14 +60,14 @@ else:
     dataloader = dl.DataLoader(file, 1000)
     X,y = dataloader.load_dataset(return_X_y=True)
     print("Dataset loaded")
-    
+
     #preprocess tweets
     X = [' '.join(pp.preprocess(tweet)) for tweet in X]
-   
+    
     #if not fasttext convert score to labels
     if load_model!='fasttext':
         y = [ftp.FastTextModel(quiet=True).mapToLabel(score) for score in y]
-    #i=j
+    
     #re-set the tweets and scores in dataloader (after changes)
     dataloader.set_X(X,y)
     
@@ -76,9 +78,8 @@ else:
     # if not fasttext get tfidf
     if load_model!='fasttext':
         if representation=='tfidf':
-            # Set pca_level to None if you do not want a PCA transformation
-            tfidf, pca, X_train = pp.tfidf_of_corpus(X_train, pca_level=None)
-            X_test = [pp.tfidfVec(x, tfidf, pca).tolist()[0] for x in X_test]
+            tfidf, X_train = pp.tfidf_of_corpus(X_train)
+            X_test = [pp.tfidfVec(x, tfidf).tolist()[0] for x in X_test]
         elif representation=='word2vec':
             w2v = W2V()
             X_train = [w2v.make_embedding(x) for x in X_train]
@@ -96,13 +97,19 @@ else:
             y_test = [model.transform_instance(score) for score in y_test]
             y_pred = [model.clear_output(score) for score in y_pred]
 
-        #print(confusion_matrix(y_test, y_pred))
+        print(confusion_matrix(y_test, y_pred))
         results = {'accuracy': balanced_accuracy_score(y_test, y_pred), 'precision': precision_score(y_test, y_pred, average='macro'), 
         'recall': recall_score(y_test, y_pred, average='macro'), 'f1': f1_score(y_test, y_pred, average='macro')}
         return results
 
-    print("Scoring the model...")
+    print("Score...")
     sc = score(model, X_train, y_train)
+    
+    
+    print("Metrics of ",load_model," are:", sc)
+
+    print("Score...")
+    sc = score(model, X_test, y_test)
     
     
     print("Metrics of ",load_model," are:", sc)

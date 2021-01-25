@@ -22,9 +22,9 @@ class FastTextModel():
 
     def mapToLabel(self,score):
         label="NULL"
-        if score>=-1 and score<-0.2:
+        if score>=-1 and score<-0.05:
             label="NEGATIVE"
-        elif (score<=0.2):
+        elif (score<=0.05):
             label="NEUTRAL"
         elif score<=1:
             label="POSITIVE"
@@ -66,9 +66,15 @@ class FastTextModel():
         predictions = []
         for row in X_test:
             p = self.model.predict(row, k=1)
-            print(p)
+            #print(p)
             pred = re.sub("\,[A-Za-z]+","",p[0][0])
             predictions.append(pred)
         return predictions 
     
-    
+    def clear_output(self, x):
+        if '__label__POSITIVE' in x:
+            return '__label__POSITIVE'
+        elif '__label__NEUTRAL' in x:
+            return '__label__NEUTRAL'
+        elif '__label__NEGATIVE' in x:
+            return '__label__NEGATIVE'

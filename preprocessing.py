@@ -250,7 +250,7 @@ def dealWithNegation(inputStr):
     return outputStr
 
 # =============================================================================
-def tfidf_of_corpus(corpus, pca_level=None):
+def tfidf_of_corpus(corpus):
     """
     :param corpus: list of str
     :return tfidf: the tfidf vectorizer model
@@ -258,19 +258,15 @@ def tfidf_of_corpus(corpus, pca_level=None):
 
     Return the tfidf model and matrix for a corpus.
     """
-    tfidf = TfidfVectorizer()
+    tfidf = TfidfVectorizer(min_df=15)
     tfidf.fit(corpus)
     output = tfidf.transform(corpus).toarray()
 
-    pca = None
-    if pca_level != None:
-        pca = PCA(pca_level)
-        output = pca.fit_transform(output)
 
-    return tfidf, pca, output
+    return tfidf, output
 
 # =============================================================================
-def tfidfVec(inputStr, tfidf, pca):
+def tfidfVec(inputStr, tfidf):
     """
     :param inputStr: the input string
     :return outputStr: inputStr to TF_IDF scores
@@ -279,8 +275,6 @@ def tfidfVec(inputStr, tfidf, pca):
     """
     
     outputStr = tfidf.transform([inputStr]).toarray()
-    if pca != None:
-        outputStr = pca.transform(outputStr)
     return outputStr
     
  
