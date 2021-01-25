@@ -28,7 +28,7 @@ if(len(args)<1):
     sys.exit()
 else:
     #file = args[0]
-    file = "data/cleared_05"
+    file = "all_data_Amalia.csv"
     
     print("Instantiating model...")
     
@@ -41,7 +41,8 @@ else:
         parameters = {"penalty":'l2',"C":0.1,"solver":'lbfgs'} #lr parameters
     elif load_model=="svm":
         parameters = {"kernel":'rbf', "gamma":'scale', "C":100} #svm parameters
-    #parameters = {"alpha":0.1}
+    elif load_model == "naivebayes":
+        parameters = {"alpha":0.1}
  
     model = None
     if load_model == "logisticregression":
