@@ -36,10 +36,10 @@ def calculateCOUNTS(y):
            # print("Unknown Target!")
     return [countsNeg, countsNeu, countsPos]
 
-def plotCOUNTS(y_train, y_test):
+def plotCOUNTS(y_train, y_test,factor):
     labels = ['NEGATIVE', 'NEUTRAL', 'POSITIVE']
-    means1 = calculateCOUNTS(y_train)
-    means2 = calculateCOUNTS(y_test)
+    means1 = [c*factor for c in calculateCOUNTS(y_train)]
+    means2 = [c*factor for c in calculateCOUNTS(y_test)]
     
     x = np.arange(len(labels))  # the label locations
     width = 0.35  # the width of the bars
@@ -75,7 +75,6 @@ def score(model, X_test, y_test):
     y_pred = model.predict(X_test)
 
     if load_model=='fasttext':
-        #y_test = [model.transform_instance(score) for score in y_test]
         y_pred = [model.clear_output(score) for score in y_pred]
 
     print(confusion_matrix(y_test, y_pred))
@@ -104,7 +103,7 @@ else:
     load_model = re.sub('[ ]*','',load_model).lower()
     
     if load_model=="fasttext":
-        parameters = {"lr":0.2,"epoch":200,"wordNgrams":3,"dim":20} #fasttext parameters
+        parameters = {"lr":0.1,"epoch":500,"wordNgrams":3,"dim":20} #fasttext parameters
         model = ftp.FastTextModel(**parameters)
     elif load_model=="logisticregression":
         parameters = {"penalty":'l2',"C":0.1,"solver":'lbfgs'} #lr parameters
@@ -120,7 +119,7 @@ else:
     
     
     # load dataset
-    dataloader = dl.DataLoader(file, 1000)
+    dataloader = dl.DataLoader(file, 500000)
     X,y = dataloader.load_dataset(return_X_y=True)
     print("Dataset loaded")
 
@@ -166,7 +165,7 @@ else:
     print("Score...")
     sc = score(model, X_test, y_test)
 
-    plotCOUNTS(y_train, y_test)
+    plotCOUNTS(y_train, y_test,2)
     
     print("Metrics of ",load_model," are:", sc)
     
