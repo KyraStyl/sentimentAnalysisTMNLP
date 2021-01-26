@@ -14,31 +14,29 @@ import fasttextpp as ftp
 from sklearn.linear_model import LogisticRegression
 from sklearn import svm
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, balanced_accuracy_score, confusion_matrix
-
-
+from sklearn.metrics import precision_score, recall_score, f1_score, balanced_accuracy_score, confusion_matrix
 
 args = sys.argv
 
-print(len(args))
+#print(len(args))
 print(args)
 
-if(len(args)<1):
+if(len(args)==1):
     print("No arguments passed!\nTry again.")
     sys.exit()
 else:
-    #file = args[0]
-    file = "all_data_Amalia.csv"
+    file = args[1]
+    #file = "data/cleared_05"
     
     print("Instantiating model...")
     
-    load_model = "fasttext"
-    representation = "tfidf"
+    load_model = args[2]
+    representation = args[3]
     parameters = {}
     if load_model=="fasttext":
         parameters = {"lr":0.2,"epoch":200,"wordNgrams":3,"dim":20} #fasttext parameters
     elif load_model=="logisticregression":
-        parameters = {"penalty":'l2',"C":0.1,"solver":'lbfgs'} #lr parameters
+        parameters = {"penalty":'l2',"C":0.1,"solver":'lbfgs','max_iter':200} #lr parameters
     elif load_model=="svm":
         parameters = {"kernel":'rbf', "gamma":'scale', "C":100} #svm parameters
     elif load_model == "naivebayes":
@@ -58,7 +56,7 @@ else:
     
     
     # load dataset
-    dataloader = dl.DataLoader(file, 1000)
+    dataloader = dl.DataLoader(file, int(args[4]))
     X,y = dataloader.load_dataset(return_X_y=True)
     print("Dataset loaded")
 
@@ -103,17 +101,17 @@ else:
         'recall': recall_score(y_test, y_pred, average='macro'), 'f1': f1_score(y_test, y_pred, average='macro')}
         return results
 
-    print("Score...")
+    print("Training metrics")
     sc = score(model, X_train, y_train)
-    
-    
     print("Metrics of ",load_model," are:", sc)
 
-    print("Score...")
+    print()
+
+    print("Testing metrics")
     sc = score(model, X_test, y_test)
-    
-    
     print("Metrics of ",load_model," are:", sc)
     
     stopTime = time.time()
     print("Execution Took : ",stopTime - startTime," seconds.")
+
+    print()

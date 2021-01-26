@@ -22,7 +22,6 @@ import itertools
 import emoji
 from bs4 import BeautifulSoup
 import warnings
-from sklearn.decomposition import PCA
 
 # =============================================================================
 warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
