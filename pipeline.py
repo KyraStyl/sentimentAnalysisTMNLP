@@ -26,11 +26,12 @@ def calculateCOUNTS(y):
     countsNeg=0
     
     for target in y:
-        if target=="POSITIVE" or target=="__label__POSITIVE":
+        target = ftp.FastTextModel(quiet=True).mapToLabel(target)
+        if target=="POSITIVE":
             countsPos+=1
-        elif target=="NEUTRAL" or target=="__label__NEUTRAL":
+        elif target=="NEUTRAL":
             countsNeu+=1
-        elif target=="NEGATIVE" or target=="__label__NEGATIVE":
+        elif target=="NEGATIVE":
             countsNeg+=1
         #else:
            # print("Unknown Target!")
@@ -124,18 +125,20 @@ else:
     print("Dataset loaded")
 
     #preprocess tweets
-    X = [' '.join(pp.preprocess(tweet)) for tweet in X]
+    #X = [' '.join(pp.preprocess(tweet)) for tweet in X]
     
     #if not fasttext convert score to labels
-    if load_model!='fasttext':
-        y = [ftp.FastTextModel(quiet=True).mapToLabel(score) for score in y]
+    #if load_model!='fasttext':
+     #   y = [ftp.FastTextModel(quiet=True).mapToLabel(score) for score in y]
     
     #re-set the tweets and scores in dataloader (after changes)
     dataloader.set_X(X,y)
     
     # split to train and test
     print("Train-test split complete")
-    X_train, X_test, y_train, y_test = dataloader.train_test_split(X, y, 0.7)    
+    X_train, X_test, y_train, y_test = dataloader.train_test_split(X, y, 0.7)
+
+    plotCOUNTS(y_train, y_test, 2)    
     
     # if not fasttext get tfidf
     if load_model!='fasttext':
@@ -164,8 +167,6 @@ else:
 
     print("Score...")
     sc = score(model, X_test, y_test)
-
-    plotCOUNTS(y_train, y_test,2)
     
     print("Metrics of ",load_model," are:", sc)
     
