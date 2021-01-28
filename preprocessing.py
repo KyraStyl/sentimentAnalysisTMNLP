@@ -22,7 +22,6 @@ import itertools
 import emoji
 from bs4 import BeautifulSoup
 import warnings
-from sklearn.decomposition import PCA
 
 # =============================================================================
 warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
@@ -259,7 +258,7 @@ def tfidf_of_corpus(corpus):
 
     Return the tfidf model and matrix for a corpus.
     """
-    tfidf = TfidfVectorizer(min_df=15)
+    tfidf = TfidfVectorizer(min_df=20)
     tfidf.fit(corpus)
     output = tfidf.transform(corpus).toarray()
 

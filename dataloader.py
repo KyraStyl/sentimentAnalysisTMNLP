@@ -35,7 +35,12 @@ class DataLoader():
 
         split_pos = int(len(tweets)*ratio)
 
-        return tweets[:split_pos], tweets[split_pos:], scores[:split_pos], scores[split_pos:]
+        x_train = tweets[:split_pos]
+        x_test = tweets[split_pos:]
+        y_train = scores[:split_pos]
+        y_test = scores[split_pos:]
+
+        return x_train, x_test, y_train, y_test 
 
     def convert_polarity_score(self, scores):
         return scores['compound']

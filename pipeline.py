@@ -14,6 +14,7 @@ import fasttextpp as ftp
 from sklearn.linear_model import LogisticRegression
 from sklearn import svm
 from sklearn.naive_bayes import MultinomialNB
+
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, balanced_accuracy_score, confusion_matrix
 import re
 import numpy as np
@@ -83,15 +84,24 @@ def score(model, X_test, y_test):
     'recall': recall_score(y_test, y_pred, average='macro'), 'f1': f1_score(y_test, y_pred, average='macro')}
     return results
 
+
 args = sys.argv
 
-print(len(args))
+#print(len(args))
 print(args)
 
-if(len(args)<1):
+if(len(args)==1):
     print("No arguments passed!\nTry again.")
     sys.exit()
 else:
+
+    file = args[1]
+    
+    print("Instantiating model...")
+    
+    load_model = args[2]
+    representation = args[3]
+
     #file = args[0]
     file = "dataset_stella.csv"
     
@@ -100,6 +110,7 @@ else:
     load_model = "Fasttext"
     representation = "tfidf"
     model = None
+
     parameters = {}
     load_model = re.sub('[ ]*','',load_model).lower()
     
@@ -107,7 +118,7 @@ else:
         parameters = {"lr":0.1,"epoch":500,"wordNgrams":3,"dim":20} #fasttext parameters
         model = ftp.FastTextModel(**parameters)
     elif load_model=="logisticregression":
-        parameters = {"penalty":'l2',"C":0.1,"solver":'lbfgs'} #lr parameters
+        parameters = {"penalty":'l2',"C":0.1,"solver":'lbfgs','max_iter':200} #lr parameters
         model = LogisticRegression(**parameters)
     elif load_model=="svm":
         parameters = {"kernel":'rbf', "gamma":'scale', "C":100} #svm parameters
@@ -120,7 +131,9 @@ else:
     
     
     # load dataset
-    dataloader = dl.DataLoader(file, 500000)
+
+    dataloader = dl.DataLoader(file, int(args[4]))
+    #dataloader = dl.DataLoader(file, 500000)
     X,y = dataloader.load_dataset(return_X_y=True)
     print("Dataset loaded")
 
@@ -156,6 +169,8 @@ else:
     print("Fitting the model...")
     model.fit(X_train,y_train)
 
+    print("Training metrics")
+    sc = score(model, X_train, y_train)
     if load_model=='fasttext':
         y_train = [model.transform_instance(score) for score in y_train]
         y_test = [model.transform_instance(score) for score in y_test]
@@ -165,10 +180,14 @@ else:
     
     print("Metrics of ",load_model," are:", sc)
 
-    print("Score...")
+    print()
+
+    print("Testing metrics")
     sc = score(model, X_test, y_test)
-    
+
     print("Metrics of ",load_model," are:", sc)
     
     stopTime = time.time()
     print("Execution Took : ",stopTime - startTime," seconds.")
+
+    print()
