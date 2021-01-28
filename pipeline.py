@@ -26,7 +26,6 @@ if(len(args)==1):
     sys.exit()
 else:
     file = args[1]
-    #file = "data/cleared_05"
     
     print("Instantiating model...")
     

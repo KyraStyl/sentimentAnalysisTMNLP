@@ -4,7 +4,6 @@ from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from random import sample, seed
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from sklearn.preprocessing import MinMaxScaler
 
 class DataLoader():
     def __init__(self, filename, size):
@@ -36,14 +35,10 @@ class DataLoader():
 
         split_pos = int(len(tweets)*ratio)
 
-        scaler = MinMaxScaler()
         x_train = tweets[:split_pos]
         x_test = tweets[split_pos:]
         y_train = scores[:split_pos]
         y_test = scores[split_pos:]
-
-        x_train = scaler.fit_transform(x_train)
-        x_test = scaler.transform(x_test)
 
         return x_train, x_test, y_train, y_test 
 
