@@ -99,7 +99,6 @@ def removeHTMLandURLs(inputStr):
     Hint: Use Beautiful soup library for HTML and re library for urls
     """
     outputStr = BeautifulSoup(inputStr, 'html.parser').get_text()
-    #exp=r'''(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))'''
     exp = '((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z]){2,6}([a-zA-Z0-9\.\&\/\?\:@\-_=#])*'
     outputStr = re.sub(exp, ' URL ', outputStr)
     return outputStr
@@ -168,7 +167,6 @@ def lemmatize(inputStr):
     return outputStr
 
 # =============================================================================
-# why not totally remove them?
 def removeNumbers(inputStr):
     """
     :param inputStr: the input string
@@ -211,7 +209,6 @@ def dealWithRTsAndMentions(inputStr):
     
     keep only -> "This is Generation Z ...etc."
     """
-    #outputStr = inputStr
     outputStr = re.sub("@[A-Za-z0-9\-\_\.\:]+", "", inputStr)
     outputStr = re.sub("rt[ ]+[\:]*", "", outputStr)
     return outputStr
@@ -273,7 +270,6 @@ def tfidfVec(inputStr, tfidf):
     
     Use sklearn library.
     """
-    
     outputStr = tfidf.transform([inputStr]).toarray()
     return outputStr
     

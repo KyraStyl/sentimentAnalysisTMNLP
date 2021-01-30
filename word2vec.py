@@ -20,5 +20,3 @@ class W2V():
         w2v_sentence = [self.get_w2v(word) for word in sentence_list]
         w2v_sentence = np.array(w2v_sentence)
         return np.mean(w2v_sentence, axis=0)
-
-#print(W2V().make_embedding('future grandson hey grandpa want corona'))

@@ -14,26 +14,20 @@ import fasttextpp as ftp
 from sklearn.linear_model import LogisticRegression
 from sklearn import svm
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, balanced_accuracy_score, confusion_matrix
+from sklearn.metrics import precision_score, recall_score, f1_score, balanced_accuracy_score, confusion_matrix
 import re
-import numpy as np
-import matplotlib.pyplot as plt
-import wordCloud as wc
-from nltk.tokenize import word_tokenize
 import plotslib as pl
 
 
-    
 def score(model, X_test, y_test):
     y_pred = model.predict(X_test)
-
-    if load_model=='fasttext':
-        y_pred = [model.clear_output(score) for score in y_pred]
 
     print(confusion_matrix(y_test, y_pred))
     results = {'accuracy': balanced_accuracy_score(y_test, y_pred), 'precision': precision_score(y_test, y_pred, average='macro'), 
     'recall': recall_score(y_test, y_pred, average='macro'), 'f1': f1_score(y_test, y_pred, average='macro')}
     return results
+
+
 
 args = sys.argv
 
@@ -102,7 +96,7 @@ else:
     X_train, X_test, y_train, y_test = dataloader.train_test_split(X, y, 0.7)
     
     
-    # if not fasttext get tfidf
+    # if not fasttext get tfidf or word2vec
     if load_model!='fasttext':
         if representation=='tfidf':
             tfidf, X_train = pp.tfidf_of_corpus(X_train)

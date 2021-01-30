@@ -66,8 +66,7 @@ class FastTextModel():
         predictions = []
         for row in X_test:
             p = self.model.predict(row, k=1)
-            #print(p)
-            pred = re.sub("\,[A-Za-z]+","",p[0][0])
+            pred = self.clear_output(re.sub("\,[A-Za-z]+","",p[0][0]))
             predictions.append(pred)
         return predictions 
     

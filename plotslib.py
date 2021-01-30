@@ -43,8 +43,6 @@ def calculateCOUNTS(y):
             countsNeu+=1
         elif target=="NEGATIVE":
             countsNeg+=1
-        #else:
-           # print("Unknown Target!")
     return [countsNeg, countsNeu, countsPos]
 
 
@@ -63,7 +61,6 @@ def plotCOUNTS(y_train, y_test):
     rects1 = ax.bar(x - width/2, means1, width, label='Train')
     rects2 = ax.bar(x + width/2, means2, width, label='Test')
     
-    # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_ylabel('Counts')
     ax.set_title('Counts by set and class')
     ax.set_xticks(x)

@@ -22,7 +22,6 @@ class DataLoader():
     def set_X(self, dataX, dataY):
         self.tweets = dataX
         self.scores = dataY
-        #self.df['text']=dataX 
 
     def train_test_split(self, X, y, ratio):
         if X is None:
